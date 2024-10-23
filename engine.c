@@ -24,19 +24,21 @@ void InitEngine(struct Enginedata *engineData) {
         return;
     }
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Krooz");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Model Viewer");
     SetTargetFPS(120);
 
     engineData->camera->position = (Vector3){ 0.0f, 10.0f, 10.0f };
     engineData->camera->up = (Vector3){ 0.0f, 1.0f, 0.0f };
     engineData->camera->fovy = 80.0f;
     engineData->camera->projection = CAMERA_PERSPECTIVE;
-    engineData->model = LoadModel("D:/Programming Projects/GraphicsEngine/assets/Monkey.obj");
+    engineData->model = LoadModel("assets/Monkey.obj");
 
 
 }
 
-void GameLoop(struct Enginedata *engineData) {
+void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
+    strcpy(loadedData->ModelPath , "default");    
+    strcpy(loadedData->TexturePath , "default");    
     while (!WindowShouldClose()) {
 
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
@@ -48,10 +50,12 @@ void GameLoop(struct Enginedata *engineData) {
                 if(IsFileExtension(files.paths[i], ".obj")){
                     printf("We Got Obj File");
                     UpdateModels(engineData , files.paths[i]);
+                    strcpy(loadedData->ModelPath , files.paths[i]); 
                 }
                 if(IsFileExtension(files.paths[i], ".png")){
                     printf("We Got Png File");
                     UpdateTextures(engineData , files.paths[i]);
+                    strcpy(loadedData->TexturePath , files.paths[i]); 
                 }
 
             }
@@ -73,7 +77,8 @@ void GameLoop(struct Enginedata *engineData) {
         GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-60, 200, 20 }, "xMin", "xMax", &engineData->rotx, 0, 360);
         GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-80, 200, 20 }, "yMin", "yMax", &engineData->roty, 0, 360);
         GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-100, 200, 20 }, "zMin", "zMax", &engineData->rotz, 0, 360);
-
+        GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-300, 300, 30},loadedData->ModelPath);
+        GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-280, 300, 30},loadedData->TexturePath);
 
         EndDrawing();
     }

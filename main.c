@@ -4,9 +4,10 @@
 int main() {
 
     struct Enginedata engineData;
+    struct LoadedData loadedData;
 
     InitEngine(&engineData);
-    GameLoop(&engineData);
+    GameLoop(&engineData,&loadedData);
 
     CloseWindow();
     return 0;

@@ -19,8 +19,13 @@ struct Enginedata
     float rotz;
 };
 
+struct LoadedData{
+    char ModelPath[1000];
+    char TexturePath[1000];
+};
+
 void InitEngine(struct Enginedata *engineData);
-void GameLoop(struct Enginedata *engineData);
+void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData);
 void UpdateModels(struct Enginedata *engineData, const char *path);
 void UpdateTextures(struct Enginedata *engineData, const char *path);
 
