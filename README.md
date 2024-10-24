@@ -1,6 +1,8 @@
 # 3D Model Viewer using RAYLIB and C
-This side project is a lightweight 3D model viewer built with RAYLIB and C. It supports drag-and-drop OBJ model loading and can automatically generate terrain from heightmaps (images with "height" in the filename). Additionally, you can also view png base color as well with drag and drop only supports png at the moment.
+This side project is a lightweight 3D model viewer built with RAYLIB and C. It supports drag-and-drop OBJ and Gltf model loading and can preview height data from heightmaps (images with "height" in the filename). Additionally, you can also view png base color as well with drag and drop only supports png at the moment.
 
+
+<img width = "500" src = "./assets/demo.png"></img>
 <h2>🔧 Dependencies</h2>
 <ul>
   <li>📦 <strong>Raylib</strong> - A simple and easy-to-use library to enjoy videogames programming. <a href="https://www.raylib.com" target="_blank">Visit Raylib Website</a></li>

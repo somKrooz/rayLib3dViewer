@@ -50,16 +50,17 @@ void InitEngine(struct Enginedata *engineData) {
 
 void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
     strcpy(loadedData->ModelPath , "default");    
-    strcpy(loadedData->TexturePath , "default");    
+    strcpy(loadedData->TexturePath , "default");
+    engineData->scale = 1;    
     while (!WindowShouldClose()) {
 
         if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-            UpdateCamera(engineData->camera, CAMERA_PERSPECTIVE);
+           UpdateCamera(engineData->camera, CAMERA_PERSPECTIVE);
         }
         if (IsFileDropped()){
             FilePathList files = LoadDroppedFiles();
             for(int i=0 ; i<files.count; i++ ){
-                if(IsFileExtension(files.paths[i], ".obj")){
+                if(IsFileExtension(files.paths[i], ".obj") || IsFileExtension(files.paths[i] , ".gltf")){
                     printf("We Got Obj File");
                     UpdateModels(engineData , files.paths[i]);
                     strcpy(loadedData->ModelPath , files.paths[i]); 

@@ -4,7 +4,7 @@
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
-#define min_scale 1
+#define min_scale 0.1f
 #define max_scale 10
 
 
