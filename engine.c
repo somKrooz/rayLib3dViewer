@@ -7,6 +7,9 @@
 #include "string.h"
 #include "raymath.h"
 
+bool active;
+
+
 float TextToFloat(const char *text){
     return (float)atof(text);
 }
@@ -77,9 +80,6 @@ void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
             UnloadDroppedFiles(files);
         }
 
-        //Rotation
-        engineData->model.transform = MatrixRotateXYZ((Vector3){  DEG2RAD*engineData->rotx ,  DEG2RAD*engineData->roty ,  DEG2RAD*engineData->rotz }); 
-
         BeginDrawing();
         ClearBackground(DARKGRAY);
         //3d Stuff
@@ -94,7 +94,13 @@ void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
         GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-100, 200, 20 }, "zMin", "zMax", &engineData->rotz, 0, 360);
         GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-300, 300, 30},loadedData->ModelPath);
         GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-280, 300, 30},loadedData->TexturePath);
-
+        GuiToggle((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-130, 300, 30},"AutoRotate",&active);
+        if (active) {
+            AutoRotate(engineData, 0.0001f);  
+        }
+        else{
+            engineData->model.transform = MatrixRotateXYZ((Vector3){  DEG2RAD*engineData->rotx ,  DEG2RAD*engineData->roty ,  DEG2RAD*engineData->rotz }); 
+        }
         EndDrawing();
     }
 

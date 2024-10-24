@@ -31,4 +31,7 @@ void UpdateModels(struct Enginedata *engineData, const char *path);
 void UpdateTextures(struct Enginedata *engineData, const char *path);
 void LoadTerrain(struct Enginedata *engineData, const char *path);
 
+
+void AutoRotate(struct Enginedata *engineData ,  float angle);
+
 #endif
