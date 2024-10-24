@@ -1,4 +1,4 @@
-#include <engine.h>
+#include "engine.h"
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -9,6 +9,15 @@
 
 float TextToFloat(const char *text){
     return (float)atof(text);
+}
+
+
+bool checkForType(const char *path , const char *word){
+    if(strstr(path , word) != NULL){
+        return true;
+    }
+
+    return false;
 }
 
 void InitEngine(struct Enginedata *engineData) {
@@ -54,8 +63,14 @@ void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
                 }
                 if(IsFileExtension(files.paths[i], ".png")){
                     printf("We Got Png File");
-                    UpdateTextures(engineData , files.paths[i]);
+                    if (checkForType(files.paths[i] , "height")){
+                        LoadTerrain(engineData , files.paths[i]);
+                    }
+                    else{
+                        UpdateTextures(engineData , files.paths[i]);
+                    }
                     strcpy(loadedData->TexturePath , files.paths[i]); 
+                    strcpy(loadedData->ModelPath , "Height Data"); 
                 }
 
             }

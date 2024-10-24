@@ -12,6 +12,7 @@ struct Enginedata
 {
     Camera3D *camera;
     Model model;
+    Image img;
     Texture tex;
     float scale;
     float rotx;
@@ -28,5 +29,6 @@ void InitEngine(struct Enginedata *engineData);
 void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData);
 void UpdateModels(struct Enginedata *engineData, const char *path);
 void UpdateTextures(struct Enginedata *engineData, const char *path);
+void LoadTerrain(struct Enginedata *engineData, const char *path);
 
 #endif
