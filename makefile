@@ -1,15 +1,14 @@
-# Compiler
 CC = gcc
 
 CFLAGS = -Wall -g
 
-INCLUDES = -I ./includes -I D:\C_libs\mingw64\include  #Hard Linked
+INCLUDES = -I ./includes -I D:/C_libs/mingw64/include  # Use forward slashes or escaped backslashes
 
-LDFLAGS = -L D:\C_libs\mingw64\lib -lraylib -lopengl32 -lgdi32 -lwinmm
+LDFLAGS = -L D:/C_libs/mingw64/lib -lraylib -lopengl32 -lgdi32 -lwinmm
 
-SRC = main.c engine.c loader.c
+SRC = main.c loader.c engine.c  
 OBJ = $(SRC:.c=.o)
-TARGET = Engine
+TARGET = engine
 
 all: $(TARGET)
 
@@ -21,4 +20,4 @@ $(TARGET): $(OBJ)
 
 # Clean rule to remove generated files
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f $(OBJ) 

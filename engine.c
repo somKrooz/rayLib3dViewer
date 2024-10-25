@@ -1,112 +1,114 @@
-#include "engine.h"
-#include "raylib.h"
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
-#include  "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "raymath.h"
+#include <engine.h>
+#include <loader.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <raymath.h>
 
-bool active;
+bool isRender = false;
+int frameCount = 0;
+int maxRender = 180;
 
-
-float TextToFloat(const char *text){
-    return (float)atof(text);
-}
-
-
-bool checkForType(const char *path , const char *word){
-    if(strstr(path , word) != NULL){
-        return true;
+void InitEngine(struct Renderer *renderer, struct Loader *loader) {
+    
+    InitWindow(WIDTH, HEIGHT, "Viewer");
+    SetTargetFPS(60);
+    if (renderer == NULL) {
+        printf("Bad params Renderer");
+        return;
     }
-
-    return false;
-}
-
-void InitEngine(struct Enginedata *engineData) {
-
-    if (engineData == NULL) {
-        printf("engineData is NULL!\n");
-        return; 
-    }
-
-    engineData->camera = (Camera3D*)malloc(sizeof(Camera3D)); 
-    if (engineData->camera == NULL) {
-        printf("Failed to allocate memory for camera!\n");
+    if (loader == NULL) {
+        printf("Bad params Loader");
         return;
     }
 
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Model Viewer");
-    SetTargetFPS(120);
+    renderer->camera = (Camera *)malloc(sizeof(Camera));
+    if (renderer->camera == NULL) {
+        printf("Bad params Camera");
+        return;
+    }
+    renderer->camera->position = (Vector3){0.0f, 10.0f, 10.0f};
+    renderer->camera->target = (Vector3){0.0f, 0.0f, 0.0f};
+    renderer->camera->up = (Vector3){0.0f, 1.0f, 0.0f};
+    renderer->camera->fovy = 60.0f;
+    renderer->camera->projection = CAMERA_PERSPECTIVE;
 
-    engineData->camera->position = (Vector3){ 0.0f, 10.0f, 10.0f };
-    engineData->camera->up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    engineData->camera->fovy = 80.0f;
-    engineData->camera->projection = CAMERA_PERSPECTIVE;
-    engineData->model = LoadModel("assets/Monkey.obj");
-
+    strcpy(loader->path, "./assets/Box.obj");
+    sLoadModel(loader);
 
 }
 
-void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData) {
-    strcpy(loadedData->ModelPath , "default");    
-    strcpy(loadedData->TexturePath , "default");
-    engineData->scale = 1;    
-    while (!WindowShouldClose()) {
+void GameLoop(struct Renderer *renderer, struct Loader *loader) {
+    while (!WindowShouldClose()) 
+    {
+        //Key Bindings:
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
-           UpdateCamera(engineData->camera, CAMERA_PERSPECTIVE);
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+            UpdateCamera(renderer->camera, CAMERA_ORTHOGRAPHIC);
         }
-        if (IsFileDropped()){
-            FilePathList files = LoadDroppedFiles();
-            for(int i=0 ; i<files.count; i++ ){
-                if(IsFileExtension(files.paths[i], ".obj") || IsFileExtension(files.paths[i] , ".gltf")){
-                    printf("We Got Obj File");
-                    UpdateModels(engineData , files.paths[i]);
-                    strcpy(loadedData->ModelPath , files.paths[i]); 
-                }
-                if(IsFileExtension(files.paths[i], ".png")){
-                    printf("We Got Png File");
-                    if (checkForType(files.paths[i] , "height")){
-                        LoadTerrain(engineData , files.paths[i]);
-                    }
-                    else{
-                        UpdateTextures(engineData , files.paths[i]);
-                    }
-                    strcpy(loadedData->TexturePath , files.paths[i]); 
-                    strcpy(loadedData->ModelPath , "Height Data"); 
-                }
 
+
+
+        if(IsFileDropped())
+        {
+            FilePathList file =  LoadDroppedFiles();
+            if(file.count == 1)
+            {
+                if(IsFileExtension(file.paths[0], ".obj") || IsFileExtension(file.paths[0], ".gltf"))
+                {   
+                    strcpy(loader->path, file.paths[0]);
+                    sLoadModel(loader);
+                }
+                if(IsFileExtension(file.paths[0], ".png") || IsFileExtension(file.paths[0], ".jpg"))
+                {
+                    strcpy(loader->path, file.paths[0]);
+                    sLoadTexture(loader);
+
+                }
             }
-            UnloadDroppedFiles(files);
+            UnloadDroppedFiles(file);
         }
 
         BeginDrawing();
-        ClearBackground(DARKGRAY);
-        //3d Stuff
-        BeginMode3D(*engineData->camera);
-        DrawModel(engineData->model, (Vector3){ 0.0f, 0.0f, 0.0f },engineData->scale, WHITE);
+        ClearBackground((Color){20, 20, 20});
+
+        BeginMode3D(*renderer->camera);
+        DrawModel(loader->model, (Vector3){0.0f, 0.0f, 0.0f}, 1.0f, WHITE);
+
+        if(!isRender)
+        {
+            DrawGrid(10,1.0f);
+        }
         EndMode3D();
 
-        //GUI
-        GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-30, 200, 20 }, "minScale", "maxScale", &engineData->scale, min_scale, max_scale);
-        GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-60, 200, 20 }, "xMin", "xMax", &engineData->rotx, 0, 360);
-        GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-80, 200, 20 }, "yMin", "yMax", &engineData->roty, 0, 360);
-        GuiSlider((Rectangle){ SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-100, 200, 20 }, "zMin", "zMax", &engineData->rotz, 0, 360);
-        GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-300, 300, 30},loadedData->ModelPath);
-        GuiStatusBar((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-280, 300, 30},loadedData->TexturePath);
-        GuiToggle((Rectangle){SCREEN_WIDTH/2-500, SCREEN_HEIGHT/2-130, 300, 30},"AutoRotate",&active);
-        if (active) {
-            AutoRotate(engineData, 0.0001f);  
-        }
-        else{
-            engineData->model.transform = MatrixRotateXYZ((Vector3){  DEG2RAD*engineData->rotx ,  DEG2RAD*engineData->roty ,  DEG2RAD*engineData->rotz }); 
-        }
         EndDrawing();
+
+        if(IsKeyPressed(KEY_F1) && !isRender)
+        {
+            isRender = true; 
+        }
+        if(isRender)
+        {
+            sRotateModel(loader);
+            Image screenshot = LoadImageFromScreen(); 
+            ExportImage(screenshot, TextFormat("./render/Frame_%d.png",frameCount));
+            frameCount++; 
+            UnloadImage(screenshot); 
+            if(frameCount >= maxRender) 
+            {
+                system("python utils/convert.py");
+                system("python utils/preview.py");
+                system("python utils/remove.py");
+                frameCount = 0;
+                isRender = false;
+                loader->model.transform = MatrixRotateXYZ((Vector3){0.0f,0.0f,0.0f});
+                loader->rotation = (Vector3){0.0f,0.0f,0.0f};
+            }
+        }
     }
 
-    UnloadModel(engineData->model);
-    UnloadTexture(engineData->tex);
-    free(engineData->camera);
-
+    free(renderer->camera);
+    UnloadModel(loader->model);
 }

@@ -1,14 +1,13 @@
-#include "engine.h"
-#include "stdlib.h"  
+#include <engine.h>
+#include <loader.h>
 
-int main() {
+int main(void)
+{
+    struct Loader loader;
+    struct Renderer renderer;
+    
+    InitEngine(&renderer,&loader);
+    GameLoop(&renderer , &loader);
 
-    struct Enginedata engineData;
-    struct LoadedData loadedData;
-
-    InitEngine(&engineData);
-    GameLoop(&engineData,&loadedData);
-
-    CloseWindow();
     return 0;
 }

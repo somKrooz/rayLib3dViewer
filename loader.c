@@ -1,32 +1,30 @@
-#include "engine.h"
-#include "string.h"
-#include  "raylib.h"
+#include "loader.h"
 #include "raymath.h"
+#include "raylib.h"
+#include "string.h"
 
-void UpdateModels(struct Enginedata *engineData  , const char *path){
-    UnloadModel(engineData->model);
-    engineData->model = LoadModel(path);
-    engineData->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = engineData->tex;
+void sLoadModel(struct Loader *loader)
+{
+    if(loader->model.meshCount == 0) UnloadModel(loader->model);
+    loader->model = LoadModel(loader->path);
+    if(loader->tex.id >=0)
+    {
+        strcpy(loader->path , "./assets/uv_shader.png");
+        loader->tex = LoadTexture(loader->path);
+    }
+    loader->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = loader->tex;
 }
 
-void AutoRotate(struct Enginedata *engineData , float Speed){
-    engineData->roty += Speed;
-    engineData->model.transform = MatrixRotateXYZ((Vector3){0,RAD2DEG*engineData->roty, 0});
+void sRotateModel(struct Loader *loader)
+{
+    loader->rotation.y += 2.0f;
+    loader->model.transform = MatrixScale(10.0f,0.0f,0.0f); 
+    loader->model.transform = MatrixRotateXYZ((Vector3){0.0f ,DEG2RAD*loader->rotation.y,0.0f});
 }
 
-
-void LoadTerrain(struct Enginedata *engineData  , const char *path){
-    UnloadModel(engineData->model);
-    engineData->img = LoadImage(path);
-    Mesh mesh = GenMeshHeightmap(engineData->img , (Vector3){5,.5,5});
-    engineData->model = LoadModelFromMesh(mesh);
-    engineData->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = engineData->tex;
+void sLoadTexture(struct Loader *loader)
+{
+    if(loader->tex.id <0) UnloadTexture(loader->tex);
+    loader->tex = LoadTexture(loader->path);
+    loader->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = loader->tex; 
 }
-
-void UpdateTextures(struct Enginedata *engineData, const char *path){
-    UnloadTexture(engineData->tex);
-    engineData->tex  = LoadTexture(path);
-    engineData->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = engineData->tex; 
-}
-
-

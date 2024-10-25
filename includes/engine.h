@@ -1,37 +1,20 @@
-#ifndef ENGINE_H
-#define ENGINE_H
-#include "raylib.h"  
+#ifndef RENDERER_H
+#define RENDERER_H
+#include <raylib.h>
+#include <loader.h>
 
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 800
-#define min_scale 0.1f
-#define max_scale 10
+#define WIDTH 900
+#define HEIGHT 600
 
-
-struct Enginedata
+struct Renderer
 {
-    Camera3D *camera;
+    Camera *camera;
     Model model;
-    Image img;
-    Texture tex;
-    float scale;
-    float rotx;
-    float roty;
-    float rotz;
+    Texture tex;   
 };
 
-struct LoadedData{
-    char ModelPath[1000];
-    char TexturePath[1000];
-};
+void InitEngine(struct Renderer *renderer,struct Loader *loader);
+void GameLoop(struct Renderer *renderer , struct Loader *loader);
 
-void InitEngine(struct Enginedata *engineData);
-void GameLoop(struct Enginedata *engineData , struct LoadedData *loadedData);
-void UpdateModels(struct Enginedata *engineData, const char *path);
-void UpdateTextures(struct Enginedata *engineData, const char *path);
-void LoadTerrain(struct Enginedata *engineData, const char *path);
-
-
-void AutoRotate(struct Enginedata *engineData ,  float angle);
 
 #endif
