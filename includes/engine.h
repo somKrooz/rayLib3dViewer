@@ -10,7 +10,8 @@ struct Renderer
 {
     Camera *camera;
     Model model;
-    Texture tex;   
+    Texture tex;  
+    bool isActive; 
 };
 
 void InitEngine(struct Renderer *renderer,struct Loader *loader);

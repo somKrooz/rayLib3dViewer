@@ -20,4 +20,4 @@ $(TARGET): $(OBJ)
 
 # Clean rule to remove generated files
 clean:
-	rm -f $(OBJ) 
+	rm -f $(OBJ) $(TARGET)
